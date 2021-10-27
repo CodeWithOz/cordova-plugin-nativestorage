@@ -409,7 +409,6 @@ StorageHandle.prototype.getItem = function(reference, success, error) {
       } catch (err) {
         error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
       }
-      success(obj);
     }).catch(err => {
       error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
     });
