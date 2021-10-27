@@ -368,6 +368,14 @@ StorageHandle.prototype.setItem = function(reference, obj, success, error) {
     error(new NativeStorageError(NativeStorageError.NULL_REFERENCE, "JS", ""));
     return;
   }
+  if (Array.isArray(window.__sqliteNativeStorage) && window.__sqliteNativeStorage.length > 0 && window.__sqliteNativeStorage.includes(reference) && typeof window.__sqliteNativeSave === 'function') {
+    window.__sqliteNativeSave(reference, objAsString).then(value => {
+      success(obj);
+    }).catch(err => {
+      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
+    });
+    return;
+  }
   this.storageHandlerDelegate(function(data) {
     try {
       obj = JSON.parse(data);
@@ -393,6 +401,20 @@ StorageHandle.prototype.getItem = function(reference, success, error) {
   }
   var obj = {};
 
+  if (Array.isArray(window.__sqliteNativeStorage) && window.__sqliteNativeStorage.length > 0 && window.__sqliteNativeStorage.includes(reference) && typeof window.__sqliteNativeGet === 'function') {
+    window.__sqliteNativeGet(reference).then(data => {
+      try {
+        obj = JSON.parse(data);
+        success(obj);
+      } catch (err) {
+        error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
+      }
+      success(obj);
+    }).catch(err => {
+      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
+    });
+    return;
+  }
   this.storageHandlerDelegate(
     function(data) {
       try {
