@@ -350,176 +350,324 @@ StorageHandle.prototype.getObject = function(reference, success, error) {
 };
 
 /* API >= 2 */
-StorageHandle.prototype.setItem = function(reference, obj, success, error) {
-
-  //if error is null then replace with empty function to silence warnings
-  if(!error){
-    error = function(){};
-  }
-
-  var objAsString = "";
-  try {
-    objAsString = JSON.stringify(obj);
-  } catch (err) {
-    error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-    return;
-  }
-  if (reference === null) {
-    error(new NativeStorageError(NativeStorageError.NULL_REFERENCE, "JS", ""));
-    return;
-  }
-  if (Array.isArray(window.__sqliteNativeStorage) && window.__sqliteNativeStorage.length > 0 && window.__sqliteNativeStorage.includes(reference) && typeof window.__sqliteNativeSave === 'function') {
-    window.__sqliteNativeSave(reference, objAsString).then(value => {
-      success(obj);
-    }).catch(err => {
-      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-    });
-    return;
-  }
-  this.storageHandlerDelegate(function(data) {
-    try {
-      obj = JSON.parse(data);
-      success(obj);
-    } catch (err) {
-      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
+StorageHandle.prototype.setItem = function (reference, obj, success, error) {
+    //if error is null then replace with empty function to silence warnings
+    if (!error) {
+        error = function () {};
     }
-  }, function(code) {
-    error(new NativeStorageError(code, "Native", ""));
-  }, "NativeStorage", "setItem", [reference, objAsString]);
+
+    var objAsString = '';
+    try {
+        objAsString = JSON.stringify(obj);
+    } catch (err) {
+        error(
+            new NativeStorageError(
+                NativeStorageError.JSON_ERROR,
+                'JS',
+                err,
+                reference
+            )
+        );
+        return;
+    }
+    if (reference === null) {
+        error(
+            new NativeStorageError(
+                NativeStorageError.NULL_REFERENCE,
+                'JS',
+                '',
+                reference
+            )
+        );
+        return;
+    }
+    if (
+        Array.isArray(window.__sqliteNativeStorage) &&
+        window.__sqliteNativeStorage.length > 0 &&
+        window.__sqliteNativeStorage.includes(reference) &&
+        typeof window.__sqliteNativeSave === 'function'
+    ) {
+        window
+            .__sqliteNativeSave(reference, objAsString)
+            .then(value => {
+                success(obj);
+            })
+            .catch(err => {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            });
+        return;
+    }
+    this.storageHandlerDelegate(
+        function (data) {
+            try {
+                obj = JSON.parse(data);
+                success(obj);
+            } catch (err) {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            }
+        },
+        function (code) {
+            error(new NativeStorageError(code, 'Native', '', reference));
+        },
+        'NativeStorage',
+        'setItem',
+        [reference, objAsString]
+    );
 };
 
-StorageHandle.prototype.getItem = function(reference, success, error) {
+StorageHandle.prototype.getItem = function (reference, success, error) {
+    //if error is null then replace with empty function to silence warnings
+    if (!error) {
+        error = function () {};
+    }
 
-  //if error is null then replace with empty function to silence warnings
-  if(!error){
-    error = function(){};
-  }
+    if (reference === null) {
+        error(
+            new NativeStorageError(
+                NativeStorageError.NULL_REFERENCE,
+                'JS',
+                '',
+                reference
+            )
+        );
+        return;
+    }
+    var obj = {};
 
-  if (reference === null) {
-    error(new NativeStorageError(NativeStorageError.NULL_REFERENCE, "JS", ""));
-    return;
-  }
-  var obj = {};
-
-  if (Array.isArray(window.__sqliteNativeStorage) && window.__sqliteNativeStorage.length > 0 && window.__sqliteNativeStorage.includes(reference) && typeof window.__sqliteNativeGet === 'function') {
-    window.__sqliteNativeGet(reference).then(data => {
-      try {
-        obj = JSON.parse(data);
-        success(obj);
-      } catch (err) {
-        error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-      }
-    }).catch(err => {
-      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-    });
-    return;
-  }
-  this.storageHandlerDelegate(
-    function(data) {
-      try {
-        obj = JSON.parse(data);
-        success(obj);
-      } catch (err) {
-        error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-      }
-    },
-    function(code) {
-      error(new NativeStorageError(code, "Native", ""));
-    }, "NativeStorage", "getItem", [reference]);
+    if (
+        Array.isArray(window.__sqliteNativeStorage) &&
+        window.__sqliteNativeStorage.length > 0 &&
+        window.__sqliteNativeStorage.includes(reference) &&
+        typeof window.__sqliteNativeGet === 'function'
+    ) {
+        window
+            .__sqliteNativeGet(reference)
+            .then(data => {
+                try {
+                    obj = JSON.parse(data);
+                    success(obj);
+                } catch (err) {
+                    error(
+                        new NativeStorageError(
+                            NativeStorageError.JSON_ERROR,
+                            'JS',
+                            err,
+                            reference
+                        )
+                    );
+                }
+            })
+            .catch(err => {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            });
+        return;
+    }
+    this.storageHandlerDelegate(
+        function (data) {
+            try {
+                obj = JSON.parse(data);
+                success(obj);
+            } catch (err) {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            }
+        },
+        function (code) {
+            error(new NativeStorageError(code, 'Native', '', reference));
+        },
+        'NativeStorage',
+        'getItem',
+        [reference]
+    );
 };
 
 /* API >= 2 */
-StorageHandle.prototype.setSecretItem = function(reference, obj, encryptConfig, success, error) {
-
-  //if error is null then replace with empty function to silence warnings
-  if(!error){
-    error = function(){};
-  }
-
-  var objAsString = "";
-  try {
-    objAsString = JSON.stringify(obj);
-  } catch (err) {
-    error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-    return;
-  }
-  if (reference === null) {
-    error(new NativeStorageError(NativeStorageError.NULL_REFERENCE, "JS", ""));
-    return;
-  }
-
-  var action = "setItem";
-  var params = [reference, objAsString];
-  switch (encryptConfig.mode) {
-    case "password":
-      action = "setItemWithPassword";
-      params = [reference, objAsString, encryptConfig.value];
-      break;
-    case "key":
-      action = "setItemWithKey";
-      break;
-    case "none":
-      break;
-    default: {
-      error(new NativeStorageError(NativeStorageError.WRONG_PARAMETER, "JS", ""));
-      return;
+StorageHandle.prototype.setSecretItem = function (
+    reference,
+    obj,
+    encryptConfig,
+    success,
+    error
+) {
+    //if error is null then replace with empty function to silence warnings
+    if (!error) {
+        error = function () {};
     }
-  }
-  this.storageHandlerDelegate(function(data) {
+
+    var objAsString = '';
     try {
-      obj = JSON.parse(data);
-      success(obj);
+        objAsString = JSON.stringify(obj);
     } catch (err) {
-      error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
+        error(
+            new NativeStorageError(
+                NativeStorageError.JSON_ERROR,
+                'JS',
+                err,
+                reference
+            )
+        );
+        return;
     }
-  }, function(code) {
-    error(new NativeStorageError(code, "Native", ""));
-  }, "NativeStorage", action, params);
+    if (reference === null) {
+        error(
+            new NativeStorageError(
+                NativeStorageError.NULL_REFERENCE,
+                'JS',
+                '',
+                reference
+            )
+        );
+        return;
+    }
+
+    var action = 'setItem';
+    var params = [reference, objAsString];
+    switch (encryptConfig.mode) {
+        case 'password':
+            action = 'setItemWithPassword';
+            params = [reference, objAsString, encryptConfig.value];
+            break;
+        case 'key':
+            action = 'setItemWithKey';
+            break;
+        case 'none':
+            break;
+        default: {
+            error(
+                new NativeStorageError(
+                    NativeStorageError.WRONG_PARAMETER,
+                    'JS',
+                    '',
+                    reference
+                )
+            );
+            return;
+        }
+    }
+    this.storageHandlerDelegate(
+        function (data) {
+            try {
+                obj = JSON.parse(data);
+                success(obj);
+            } catch (err) {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            }
+        },
+        function (code) {
+            error(new NativeStorageError(code, 'Native', '', reference));
+        },
+        'NativeStorage',
+        action,
+        params
+    );
 };
 
-StorageHandle.prototype.getSecretItem = function(reference, encryptConfig, success, error) {
-
-  //if error is null then replace with empty function to silence warnings
-  if(!error){
-    error = function(){};
-  }
-
-  if (reference === null) {
-    error(new NativeStorageError(NativeStorageError.NULL_REFERENCE, "JS", ""));
-    return;
-  }
-  var obj = {};
-
-  var action = "getItem";
-  var params = [reference];
-  switch (encryptConfig.mode) {
-    case "password":
-      action = "getItemWithPassword";
-      params = [reference, encryptConfig.value];
-      break;
-    case "key":
-      action = "getItemWithKey";
-      break;
-    case "none":
-      break;
-    default: {
-      error(new NativeStorageError(NativeStorageError.WRONG_PARAMETER, "JS", ""));
-      return;
+StorageHandle.prototype.getSecretItem = function (
+    reference,
+    encryptConfig,
+    success,
+    error
+) {
+    //if error is null then replace with empty function to silence warnings
+    if (!error) {
+        error = function () {};
     }
-  }
 
-  this.storageHandlerDelegate(
-    function(data) {
-      try {
-        obj = JSON.parse(data);
-        success(obj);
-      } catch (err) {
-        error(new NativeStorageError(NativeStorageError.JSON_ERROR, "JS", err));
-      }
-    },
-    function(code) {
-      error(new NativeStorageError(code, "Native", ""));
-    }, "NativeStorage", action, params);
+    if (reference === null) {
+        error(
+            new NativeStorageError(
+                NativeStorageError.NULL_REFERENCE,
+                'JS',
+                '',
+                reference
+            )
+        );
+        return;
+    }
+    var obj = {};
+
+    var action = 'getItem';
+    var params = [reference];
+    switch (encryptConfig.mode) {
+        case 'password':
+            action = 'getItemWithPassword';
+            params = [reference, encryptConfig.value];
+            break;
+        case 'key':
+            action = 'getItemWithKey';
+            break;
+        case 'none':
+            break;
+        default: {
+            error(
+                new NativeStorageError(
+                    NativeStorageError.WRONG_PARAMETER,
+                    'JS',
+                    '',
+                    reference
+                )
+            );
+            return;
+        }
+    }
+
+    this.storageHandlerDelegate(
+        function (data) {
+            try {
+                obj = JSON.parse(data);
+                success(obj);
+            } catch (err) {
+                error(
+                    new NativeStorageError(
+                        NativeStorageError.JSON_ERROR,
+                        'JS',
+                        err,
+                        reference
+                    )
+                );
+            }
+        },
+        function (code) {
+            error(new NativeStorageError(code, 'Native', '', reference));
+        },
+        'NativeStorage',
+        action,
+        params
+    );
 };
 
 /* list keys */

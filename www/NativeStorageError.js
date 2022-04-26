@@ -2,10 +2,11 @@
  * NativeStorageError
  * @constructor
  */
-var NativeStorageError = function(code, source, exception) {
+var NativeStorageError = function (code, source, exception, reference) {
     this.code = code || null;
     this.source = source || null;
     this.exception = exception || null;
+    this.reference = reference || null;
 };
 
 // Make NativeStorageError a real Error, you can test with `instanceof Error`
